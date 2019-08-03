@@ -34,7 +34,7 @@ const (
 type Type string
 
 // Token is the data structure that holds
-// all the necessary information that our
+// all the necessary fields that our
 // lexer is going to output
 type Token struct {
 	Type    Type
