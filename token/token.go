@@ -13,7 +13,7 @@ type Type string
 
 // keywords is a map that contains all the language defined keywords
 var keywords = map[string]Type{
-	"fn":  FUNCTION,
+	"fun": FUNCTION,
 	"let": LET,
 }
 
