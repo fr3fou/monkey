@@ -1,5 +1,22 @@
 package token
 
+// Token is the data structure that holds
+// all the necessary fields that our
+// lexer is going to output
+type Token struct {
+	Type    Type
+	Literal string // TODO: This can be optimized by changing it to byte or int
+}
+
+// Type is used to determine the token variant
+type Type string
+
+// keywords is a map that contains all the language defined keywords
+var keywords = map[string]Type{
+	"fn":  FUNCTION,
+	"let": LET,
+}
+
 // All possible token variants
 const (
 	ILLEGAL = "ILLEGAL"
@@ -30,13 +47,15 @@ const (
 	LET      = "LET"
 )
 
-// Type is used to determine the token variant
-type Type string
+// LookupIdentifier checks if the given identifier is
+// a keyword or a user defined variable / identifier
+// and returns the Type
+func LookupIdentifier(ident string) Type {
+	if token, ok := keywords[ident]; ok {
+		return token
+	}
 
-// Token is the data structure that holds
-// all the necessary fields that our
-// lexer is going to output
-type Token struct {
-	Type    Type
-	Literal string // This can be optimized by changing it to byte or int
+	// if the provided identifier is not a part of the keyword
+	// map, then it's a user defined one - we should return IDENT
+	return IDENT
 }
