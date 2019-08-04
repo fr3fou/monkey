@@ -48,6 +48,8 @@ func (l *Lexer) NextToken() token.Token {
 
 		// if we have another "="
 		if nextChar == '=' {
+			// it's the EQ operator
+
 			// we can't use the newToken helper function
 			// as it takes in a byte, not an array of bytes
 			tok = token.Token{
