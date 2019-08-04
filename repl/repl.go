@@ -19,7 +19,7 @@ func Start(r io.Reader, w io.Writer) {
 
 	fmt.Fprint(w, prompt)
 	for scanner.Scan() {
-		l := lexer.NewLexer(scanner.Text())
+		l := lexer.New(scanner.Text())
 
 		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 			fmt.Fprintf(w, "%+v\n", tok)

@@ -18,9 +18,9 @@ type Lexer struct {
 	ch byte // TODO: should be rune instead - support UTF
 }
 
-// NewLexer returns a pointer to
+// New returns a pointer to
 // a Lexer struct with the given input
-func NewLexer(input string) *Lexer {
+func New(input string) *Lexer {
 	l := &Lexer{
 		input: input,
 	}
