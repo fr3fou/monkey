@@ -17,7 +17,7 @@ const prompt = ">> "
 func Start(r io.Reader, w io.Writer) {
 	scanner := bufio.NewScanner(r)
 
-	fmt.Print(prompt)
+	fmt.Fprint(w, prompt)
 	for scanner.Scan() {
 		l := lexer.NewLexer(scanner.Text())
 
