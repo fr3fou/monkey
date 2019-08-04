@@ -13,8 +13,13 @@ type Type string
 
 // keywords is a map that contains all the language defined keywords
 var keywords = map[string]Type{
-	"fun": FUNCTION,
-	"let": LET,
+	"fun":    FUNCTION,
+	"let":    LET,
+	"true":   TRUE,
+	"false":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
+	"return": RETURN,
 }
 
 // All possible token variants
@@ -29,8 +34,16 @@ const (
 
 	// Operators
 
-	ASSIGN = "="
-	PLUS   = "+"
+	ASSIGN   = "="
+	EQ       = "=="
+	NEQ      = "!="
+	PLUS     = "+"
+	MINUS    = "-"
+	BANG     = "!"
+	ASTERISK = "*"
+	SLASH    = "/"
+	LT       = "<"
+	GT       = ">"
 
 	// Delimiters
 
@@ -45,6 +58,11 @@ const (
 
 	FUNCTION = "FUNCTION"
 	LET      = "LET"
+	TRUE     = "TRUE"
+	FALSE    = "FALSE"
+	IF       = "IF"
+	ELSE     = "ELSE"
+	RETURN   = "RETURN"
 )
 
 // LookupIdentifier checks if the given identifier is
