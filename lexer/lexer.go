@@ -208,9 +208,9 @@ func (l *Lexer) eatWhitespace() {
 func (l *Lexer) peekChar() byte {
 	if l.nextPos >= len(l.input) {
 		return 0
-	} else {
-		return l.input[l.nextPos]
 	}
+
+	return l.input[l.nextPos]
 }
 
 // newToken is a helper function that simplifies creating tokens
