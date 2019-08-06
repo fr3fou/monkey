@@ -25,6 +25,15 @@ type Program struct {
 	Statements []Statement
 }
 
+// TokenLiteral returns the root token literal
+func (p *Program) TokenLiteral() string {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].TokenLiteral()
+	}
+
+	return ""
+}
+
 // LetStatement is any statment for declaring variables (let x = "foo")
 type LetStatement struct {
 	Token token.Token // the token.LET token
@@ -57,11 +66,15 @@ func (i *Identifier) TokenLiteral() string {
 	return i.Token.Literal
 }
 
-// TokenLiteral returns the root token literal
-func (p *Program) TokenLiteral() string {
-	if len(p.Statements) > 0 {
-		return p.Statements[0].TokenLiteral()
-	}
+// ReturnStatement is any statment that returns from a function (return 5)
+type ReturnStatement struct {
+	Token       token.Token
+	ReturnValue Expression
+}
 
-	return ""
+func (rs *ReturnStatement) statementNode() {}
+
+// TokenLiteral returns the `let` token literal
+func (rs *ReturnStatement) TokenLiteral() string {
+	return rs.Token.Literal
 }
