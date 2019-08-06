@@ -54,6 +54,8 @@ func (ls *LetStatement) TokenLiteral() string {
 // let a = 5;
 // let b = a;
 // in this case we can see that a IS an expression (it returns a value)
+//
+// Value is technically the same as Token.Literal or TokenLiteral()
 type Identifier struct {
 	Token token.Token // the token.IDENT token
 	Value string
