@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/fr3fou/monkey/ast"
 	"github.com/fr3fou/monkey/lexer"
@@ -69,7 +70,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
 
-	for !p.curTokenIs(token.EOF) {
+	for !p.tokIs(token.EOF) {
 		stmt := p.parseStatement()
 
 		if stmt != nil {
@@ -117,7 +118,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	// TODO: parse expressions
 	// We're skipping the expressions until we
 	// encounter a semicolon
-	for !p.curTokenIs(token.SEMICOLON) {
+	for !p.tokIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
@@ -135,7 +136,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	// TODO: parse expressions
 	// We're skipping the expressions until we
 	// encounter a semicolon
-	for !p.curTokenIs(token.SEMICOLON) {
+	for !p.tokIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
@@ -180,9 +181,26 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	}
 }
 
-// curTokenIs is a helper function that checks if the current
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	lit := &ast.IntegerLiteral{
+		Token: p.tok,
+	}
+
+	value, err := strconv.ParseInt(p.tok.Literal, 0, 64)
+
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as integer", p.tok.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	lit.Value = value
+	return lit
+}
+
+// tokIs is a helper function that checks if the current
 // token type matches the one provided
-func (p *Parser) curTokenIs(t token.Type) bool {
+func (p *Parser) tokIs(t token.Type) bool {
 	return p.tok.Type == t
 }
 

@@ -102,6 +102,23 @@ func (i *Identifier) String() string {
 	return i.Value
 }
 
+// IntegerLiteral is any integer value
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
+func (il *IntegerLiteral) expressionNode() {}
+
+// TokenLiteral returns the integer token literal
+func (il *IntegerLiteral) TokenLiteral() string {
+	return il.Token.Literal
+}
+
+func (il *IntegerLiteral) String() string {
+	return il.Token.Literal
+}
+
 // ReturnStatement is any statment that returns from a function (return 5)
 type ReturnStatement struct {
 	Token       token.Token
