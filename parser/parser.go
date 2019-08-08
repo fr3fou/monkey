@@ -48,7 +48,9 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 
 	p.prefixParseFns = make(map[token.Type]prefixParseFn)
+
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 
 	return p
 }
@@ -181,6 +183,8 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	}
 }
 
+// parseIntegerLiteral parses any integer literal and applies
+// strconv.ParseInt on it
 func (p *Parser) parseIntegerLiteral() ast.Expression {
 	lit := &ast.IntegerLiteral{
 		Token: p.tok,
