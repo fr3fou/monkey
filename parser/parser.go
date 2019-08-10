@@ -34,6 +34,7 @@ type Parser struct {
 	errors         []string
 	prefixParseFns map[token.Type]prefixParseFn
 	infixParseFns  map[token.Type]infixParseFn
+	// TODO: implement postfix too
 }
 
 // New returns a pointer to a parser
@@ -51,14 +52,10 @@ func New(l *lexer.Lexer) *Parser {
 
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.BANG, p.parsePrefixExpression)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 
 	return p
-}
-
-// Errors is a function that returns all of the errors
-// that the parser met during parsing
-func (p *Parser) Errors() []string {
-	return p.errors
 }
 
 // nextToken is a helper function that advances through the tokens
@@ -104,7 +101,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Token: p.tok,
 	}
 
-	if !p.expectPeek(token.IDENT) {
+	if !p.expectNext(token.IDENT) {
 		return nil
 	}
 
@@ -113,7 +110,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Value: p.tok.Literal,
 	}
 
-	if !p.expectPeek(token.ASSIGN) {
+	if !p.expectNext(token.ASSIGN) {
 		return nil
 	}
 
@@ -153,6 +150,9 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
 	stmt.Expression = p.parseExpression(LOWEST)
 
+	// TODO: parse expressions
+	// We're skipping the expressions until we
+	// encounter a semicolon
 	if p.nextTokIs(token.SEMICOLON) {
 		p.nextToken()
 	}
@@ -160,13 +160,29 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	return stmt
 }
 
-// parseExpression is a general function for parsing expression
+// parsePrefixExpression parses any expression that has a prefix
+// -5
+// ++5
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	expression := &ast.PrefixExpression{
+		Token:    p.tok,
+		Operator: p.tok.Literal,
+	}
+
+	p.nextToken()
+
+	expression.Right = p.parseExpression(PREFIX)
+	return expression
+}
+
+// parseExpression is a general function for parsing expressions
 // it checks if the current token type has a matching function in our
 // map for prefix / infix expressions
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.prefixParseFns[p.tok.Type]
 
 	if prefix == nil {
+		p.noPrefixParseFnError(p.tok.Type)
 		return nil
 	}
 
@@ -214,9 +230,9 @@ func (p *Parser) nextTokIs(t token.Type) bool {
 	return p.nextTok.Type == t
 }
 
-// expectPeek is a helper function that checks if the next
+// expectNext is a helper function that checks if the next
 // token type matches the one provided and if yes, it calls p.nextToken()
-func (p *Parser) expectPeek(t token.Type) bool {
+func (p *Parser) expectNext(t token.Type) bool {
 	if p.nextTokIs(t) {
 		p.nextToken()
 		return true
@@ -232,6 +248,19 @@ func (p *Parser) peekError(t token.Type) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead",
 		t, p.nextTok.Type)
 	p.errors = append(p.errors, msg)
+}
+
+// noPrefixParseFnError is a helper function
+// that formats a better error when missing a prefix fn
+func (p *Parser) noPrefixParseFnError(t token.Type) {
+	msg := fmt.Sprintf("no prefix parse function for %s found", t)
+	p.errors = append(p.errors, msg)
+}
+
+// Errors is a function that returns all of the errors
+// that the parser met during parsing
+func (p *Parser) Errors() []string {
+	return p.errors
 }
 
 // registerPrefix is a helper function that adds the provided function in the map
