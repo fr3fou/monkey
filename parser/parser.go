@@ -198,7 +198,7 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	return expression
 }
 
-//  parseInfixExpression parses any expression that has a prefix
+// parseInfixExpression parses any infix expression
 // 5 + 5
 // 5 / 5
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
