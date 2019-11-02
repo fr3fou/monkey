@@ -67,7 +67,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
 	case '!':
-		// handle the "==" operator, by peeking the character after
+		// handle the "!=" operator, by peeking the character after
 		nextChar := l.peekChar()
 
 		// if we have another "="
@@ -81,7 +81,7 @@ func (l *Lexer) NextToken() token.Token {
 				Literal: string(l.ch) + string(nextChar),
 			}
 
-			// call readchar to skip the next "="
+			// call readchar to skip the "="
 			l.readChar()
 		} else {
 			tok = newToken(token.BANG, l.ch)
