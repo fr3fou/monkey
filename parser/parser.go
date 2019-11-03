@@ -338,7 +338,6 @@ func (p *Parser) Errors() []string {
 // for prefix functions
 func (p *Parser) registerPrefix(tokenType token.Type, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
-	// asdf
 }
 
 // registerInfix is a helper function that adds the provided function in the map
