@@ -218,6 +218,24 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 
 }
 
+// parseGroupedExpression parses grouped expressions
+// (5 + 5) * 2
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	// carry on with the next token
+	p.nextToken()
+
+	// kick off parsing expresions like you normally would
+	exp := p.parseExpression(LOWEST)
+
+	// after the expression has been parsed
+	// check if it ends with a `)`
+	if !p.nextTokIs(token.RPAREN) {
+		return nil
+	}
+
+	return exp
+}
+
 // parseExpression is a general function for parsing expressions
 // it checks if the current token type has a matching function in our
 // map for prefix / infix expressions
