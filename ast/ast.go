@@ -155,7 +155,7 @@ type ExpressionStatement struct {
 
 func (es *ExpressionStatement) statementNode() {}
 
-// TokenLiteral returns the expression token literal
+// TokenLiteral returns the ExpressionStatement token literal
 func (es *ExpressionStatement) TokenLiteral() string {
 	return es.Token.Literal
 }
@@ -207,7 +207,7 @@ type InfixExpression struct {
 
 func (ie *InfixExpression) expressionNode() {}
 
-// TokenLiteral returns the PrefixExpression token literal
+// TokenLiteral returns the InfixExpression token literal
 func (ie *InfixExpression) TokenLiteral() string {
 	return ie.Token.Literal
 }
@@ -224,6 +224,10 @@ func (ie *InfixExpression) String() string {
 	return out.String()
 }
 
+// Boolean is any literal that contains only a bool
+// true;
+// false;
+// let foobar = true;
 type Boolean struct {
 	Token token.Token
 	Value bool
@@ -235,6 +239,7 @@ func (b *Boolean) String() string {
 	return b.Token.Literal
 }
 
+// TokenLiteral returns the boolean token literal
 func (b *Boolean) TokenLiteral() string {
 	return b.Token.Literal
 }
