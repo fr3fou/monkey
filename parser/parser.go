@@ -69,6 +69,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+	p.registerPrefix(token.IF, p.parseIfExpression)
 
 	p.infixParseFns = make(map[token.Type]infixParseFn)
 
@@ -92,8 +93,9 @@ func (p *Parser) nextToken() {
 
 // ParseProgram starts parsing the program using our lexer
 func (p *Parser) ParseProgram() *ast.Program {
-	program := &ast.Program{}
-	program.Statements = []ast.Statement{}
+	program := &ast.Program{
+		Statements: []ast.Statement{},
+	}
 
 	for !p.tokIs(token.EOF) {
 		stmt := p.parseStatement()
@@ -235,6 +237,68 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	}
 
 	return exp
+}
+
+func (p *Parser) parseIfExpression() ast.Expression {
+	exp := &ast.IfExpression{Token: p.tok}
+
+	if !p.nextTokIs(token.LPAREN) {
+		return nil
+	}
+
+	// carry on with the condition
+	p.nextToken()
+	exp.Condition = p.parseExpression(LOWEST)
+
+	if !p.nextTokIs(token.RPAREN) {
+		return nil
+	}
+
+	if !p.nextTokIs(token.LBRACE) {
+		return nil
+	}
+
+	// parse consequence
+	exp.Consequence = p.parseBlockStatement()
+
+	// check if there is an alternative
+	if p.nextTokIs(token.ELSE) {
+		p.nextToken()
+
+		// TODO: check if there is another if
+		// handle this:
+		// else if () {}
+
+		if !p.nextTokIs(token.LBRACE) {
+			return nil
+		}
+
+		exp.Alternative = p.parseBlockStatement()
+	}
+
+	return exp
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	// create the consequence
+	block := &ast.BlockStatement{
+		Token:      p.tok,
+		Statements: []ast.Statement{},
+	}
+
+	p.nextToken()
+
+	for !p.tokIs(token.RBRACE) && !p.tokIs(token.EOF) {
+		stmt := p.parseStatement()
+
+		if stmt != nil {
+			block.Statements = append(block.Statements, stmt)
+		}
+
+		p.nextToken()
+	}
+
+	return block
 }
 
 // parseExpression is a general function for parsing expressions
