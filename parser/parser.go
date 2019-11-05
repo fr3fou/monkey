@@ -70,6 +70,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 
 	p.infixParseFns = make(map[token.Type]infixParseFn)
 
@@ -276,6 +277,63 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 
 	return exp
+}
+
+// parseFunctionLiteral parses any function literals
+// fn(x,y) { x }
+func (p *Parser) parseFunctionLiteral() ast.Expression {
+	exp := &ast.FunctionLiteral{
+		Token: p.tok,
+	}
+
+	if !p.nextTokIs(token.LPAREN) {
+		return nil
+	}
+
+	exp.Parameters = p.parseFunctionParameters()
+
+	if !p.nextTokIs(token.LBRACE) {
+		return nil
+	}
+
+	exp.Body = p.parseBlockStatement()
+
+	return exp
+}
+
+// parseFunctionParameters parses params to functions
+func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+	identifiers := []*ast.Identifier{}
+
+	// handle functions with no arguments
+	if p.nextTokIs(token.RPAREN) {
+		p.nextToken()
+		return identifiers
+	}
+
+	// skip the first `(`
+	p.nextToken()
+
+	ident := &ast.Identifier{Token: p.tok, Value: p.tok.Literal}
+	identifiers = append(identifiers, ident)
+
+	// make sure there are commas in between each param
+	// (x,y,z,f)
+	for p.nextTokIs(token.COMMA) {
+		// skip comma
+		p.nextToken()
+		p.nextToken()
+
+		ident := &ast.Identifier{Token: p.tok, Value: p.tok.Literal}
+		identifiers = append(identifiers, ident)
+	}
+
+	// if there isn't a closing `)`, return nil
+	if !p.nextTokIs(token.RPAREN) {
+		return nil
+	}
+
+	return identifiers
 }
 
 // parseBlockStatement parses any block statement
