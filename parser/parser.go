@@ -239,6 +239,8 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	return exp
 }
 
+// parseIfExpression parses any if expression
+// if (foo) { x } else { y }
 func (p *Parser) parseIfExpression() ast.Expression {
 	exp := &ast.IfExpression{Token: p.tok}
 
@@ -279,6 +281,11 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	return exp
 }
 
+// parseBlockStatement parses any block statement
+// {
+//   let a = 5;
+//   let b = 4;
+// }
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	// create the consequence
 	block := &ast.BlockStatement{
