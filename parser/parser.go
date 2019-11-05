@@ -360,7 +360,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 // parseBoolean parses any boolean literal
 func (p *Parser) parseBoolean() ast.Expression {
-	return &ast.Boolean{p.tok, p.tokIs(token.TRUE)}
+	return &ast.Boolean{Token: p.tok, Value: p.tokIs(token.TRUE)}
 }
 
 // tokIs is a helper function that checks if the current
