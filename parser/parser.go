@@ -375,7 +375,7 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	args := []ast.Expression{}
 
 	// handle functions with no arguments
-	if p.nextTokIs(token.RBRACE) {
+	if p.nextTokIs(token.RPAREN) {
 		p.nextToken()
 		return args
 	}
