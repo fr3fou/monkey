@@ -132,7 +132,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Token: p.tok,
 	}
 
-	if !p.peekNext(token.IDENT) {
+	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
 
@@ -141,7 +141,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		Value: p.tok.Literal,
 	}
 
-	if !p.peekNext(token.ASSIGN) {
+	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
 
@@ -232,7 +232,7 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 
 	// after the expression has been parsed
 	// check if it ends with a `)`
-	if !p.nextTokIs(token.RPAREN) {
+	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
 
@@ -244,7 +244,7 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 func (p *Parser) parseIfExpression() ast.Expression {
 	exp := &ast.IfExpression{Token: p.tok}
 
-	if !p.nextTokIs(token.LPAREN) {
+	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
@@ -252,11 +252,11 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	p.nextToken()
 	exp.Condition = p.parseExpression(LOWEST)
 
-	if !p.nextTokIs(token.RPAREN) {
+	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
 
-	if !p.nextTokIs(token.LBRACE) {
+	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
 
@@ -271,7 +271,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		// handle this:
 		// else if () {}
 
-		if !p.nextTokIs(token.LBRACE) {
+		if !p.expectPeek(token.LBRACE) {
 			return nil
 		}
 
@@ -288,13 +288,13 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 		Token: p.tok,
 	}
 
-	if !p.nextTokIs(token.LPAREN) {
+	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
 	exp.Parameters = p.parseFunctionParameters()
 
-	if !p.nextTokIs(token.LBRACE) {
+	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
 
@@ -331,7 +331,7 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 	}
 
 	// if there isn't a closing `)`, return nil
-	if !p.nextTokIs(token.RPAREN) {
+	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
 
@@ -394,7 +394,7 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	}
 
 	// if there isn't a closing `)`, return nil
-	if !p.nextTokIs(token.RPAREN) {
+	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
 
@@ -471,9 +471,9 @@ func (p *Parser) nextTokIs(t token.Type) bool {
 	return p.nextTok.Type == t
 }
 
-// peekNext is a helper function that checks if the next
+// expectPeek is a helper function that checks if the next
 // token type matches the one provided and if yes, it calls p.nextToken()
-func (p *Parser) peekNext(t token.Type) bool {
+func (p *Parser) expectPeek(t token.Type) bool {
 	if p.nextTokIs(t) {
 		p.nextToken()
 		return true
