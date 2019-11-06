@@ -36,6 +36,7 @@ var precedences = map[token.Type]int{
 	token.MINUS:    SUM,
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
+	token.LPAREN:   CALL,
 }
 
 // Parser is the struct which does all of the parsing
@@ -82,6 +83,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NEQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.LPAREN, p.parseCallExpression)
 
 	return p
 }
@@ -280,7 +282,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 }
 
 // parseFunctionLiteral parses any function literals
-// fn(x,y) { x }
+// fun(x,y) { x }
 func (p *Parser) parseFunctionLiteral() ast.Expression {
 	exp := &ast.FunctionLiteral{
 		Token: p.tok,
@@ -361,6 +363,42 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 
 	return block
+}
+
+func (p *Parser) parseCallExpression(fn ast.Expression) ast.Expression {
+	exp := &ast.CallExpression{Token: p.tok, Function: fn}
+	exp.Arguments = p.parseCallArguments()
+	return exp
+}
+
+func (p *Parser) parseCallArguments() []ast.Expression {
+	args := []ast.Expression{}
+
+	// handle functions with no arguments
+	if p.nextTokIs(token.RBRACE) {
+		p.nextToken()
+		return args
+	}
+
+	// skip the first `(`
+	p.nextToken()
+	args = append(args, p.parseExpression(LOWEST))
+
+	// make sure there are commas in between each param
+	// (x,y,z,f)
+	for p.nextTokIs(token.COMMA) {
+		// skip comma
+		p.nextToken()
+		p.nextToken()
+		args = append(args, p.parseExpression(LOWEST))
+	}
+
+	// if there isn't a closing `)`, return nil
+	if !p.nextTokIs(token.RPAREN) {
+		return nil
+	}
+
+	return args
 }
 
 // parseExpression is a general function for parsing expressions
