@@ -1,7 +1,6 @@
 package token
 
-// Token is the data structure that holds
-// all the necessary fields that our
+// Token holds all the necessary fields that our
 // lexer is going to output
 type Token struct {
 	Type    Type
