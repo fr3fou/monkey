@@ -6,8 +6,11 @@ import (
 )
 
 var (
-	NULL  = &object.Null{}
-	TRUE  = &object.Boolean{Value: true}
+	// NULL represents lack of value
+	NULL = &object.Null{}
+	// TRUE represents a true value
+	TRUE = &object.Boolean{Value: true}
+	// FALSE represents a false value
 	FALSE = &object.Boolean{Value: false}
 )
 
@@ -34,6 +37,8 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	switch operator {
 	case "!":
 		return evalBangOperatorExpression(right)
+	case "-":
+		return evalMinusPrefixExpression(right)
 	default:
 		return NULL
 	}
@@ -59,6 +64,17 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 		return TRUE
 	default:
 		return FALSE
+	}
+}
+
+func evalMinusPrefixExpression(right object.Object) object.Object {
+	if right.Type() != object.INTEGER_OBJ {
+		return nil
+	}
+
+	val := right.(*object.Integer).Value
+	return &object.Integer{
+		Value: -val,
 	}
 }
 
