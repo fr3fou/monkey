@@ -2,7 +2,7 @@ package object
 
 // Object represents values from our language in go
 type Object interface {
-	Type() ObjectType
+	Type() Type
 	Inspect() string
 }
 
@@ -12,4 +12,5 @@ type Type string
 const (
 	INTEGER_OBJ = "INTEGER"
 	BOOLEAN_OBJ = "BOOLEAN"
+	NULL_OBJ    = "NULL"
 )
